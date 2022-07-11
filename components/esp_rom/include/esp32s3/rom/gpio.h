@@ -105,7 +105,7 @@ void gpio_output_set(uint32_t set_mask, uint32_t clear_mask, uint32_t enable_mas
   *
   * @return None
   */
-void gpio_output_set_high(uint32_t set_mask, uint32_t clear_mask, uint32_t enable_mask, uint32_t disable_mask);
+/* void gpio_output_set_high(uint32_t set_mask, uint32_t clear_mask, uint32_t enable_mask, uint32_t disable_mask); */
 
 /**
   * @brief Sample the value of GPIO input pins(0-31) and returns a bitmask.
@@ -123,7 +123,7 @@ uint32_t gpio_input_get(void);
   *
   * @return uint32_t : bitmask for GPIO input pins, BIT(0) for GPIO32.
   */
-uint32_t gpio_input_get_high(void);
+/* uint32_t gpio_input_get_high(void); */
 
 /**
   * @brief Register an application-specific interrupt handler for GPIO pin interrupts.

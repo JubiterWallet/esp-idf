@@ -693,7 +693,7 @@ void gpio_deep_sleep_hold_dis(void)
 esp_err_t gpio_force_hold_all()
 {
 #if SOC_RTCIO_HOLD_SUPPORTED
-    rtc_gpio_force_hold_all();
+    /* rtc_gpio_force_hold_all(); */
 #endif
     portENTER_CRITICAL(&gpio_context.gpio_spinlock);
     gpio_hal_force_hold_all(gpio_context.gpio_hal);
