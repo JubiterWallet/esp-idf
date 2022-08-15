@@ -22,6 +22,7 @@
 #include "descriptors_control.h"
 #include "tusb.h"
 #include "tusb_tasks.h"
+#include "usb_descriptors.h"
 
 const static char *TAG = "TinyUSB";
 static usb_phy_handle_t phy_hdl;
@@ -30,6 +31,8 @@ esp_err_t tinyusb_driver_install(const tinyusb_config_t *config)
 {
     tusb_desc_device_t *dev_descriptor;
     const char **string_descriptor;
+    const uint8_t *cfg_descriptor;
+
     ESP_RETURN_ON_FALSE(config, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
 
     // Configure USB PHY
@@ -55,8 +58,10 @@ esp_err_t tinyusb_driver_install(const tinyusb_config_t *config)
 
     dev_descriptor = config->descriptor ? config->descriptor : &descriptor_kconfig;
     string_descriptor = config->string_descriptor ? config->string_descriptor : descriptor_str_kconfig;
+    cfg_descriptor = config->configuration_descriptor ? config->configuration_descriptor : descriptor_cfg_kconfig;
 
-    tusb_set_descriptor(dev_descriptor, string_descriptor);
+    // tusb_set_descriptor(dev_descriptor, string_descriptor);
+    tusb_set_descriptor(dev_descriptor, string_descriptor, cfg_descriptor);
 
     ESP_RETURN_ON_FALSE(tusb_init(), ESP_FAIL, TAG, "Init TinyUSB stack failed");
 #if !CONFIG_TINYUSB_NO_DEFAULT_TASK
@@ -65,3 +70,14 @@ esp_err_t tinyusb_driver_install(const tinyusb_config_t *config)
     ESP_LOGI(TAG, "TinyUSB Driver installed");
     return ESP_OK;
 }
+
+esp_err_t tinyusb_driver_uninstall(void)
+{
+    ESP_RETURN_ON_ERROR(usb_del_phy(phy_hdl), TAG, "UnInstall USB PHY failed");
+    ESP_RETURN_ON_ERROR(tusb_stop_task(), TAG, "Stop TinyUSB task failed");
+    tusb_uninited();
+    ESP_LOGI(TAG, "TinyUSB Driver uninstalled");
+    return ESP_OK;
+}
+
+

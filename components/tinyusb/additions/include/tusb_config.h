@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 #ifndef CONFIG_TINYUSB_HID_ENABLED
-#   define CONFIG_TINYUSB_HID_ENABLED 0
+#   define CONFIG_TINYUSB_HID_ENABLED 1
 #endif
 
 #ifndef CONFIG_TINYUSB_MIDI_ENABLED
@@ -82,6 +82,9 @@ extern "C" {
 // MSC Buffer size of Device Mass storage
 #define CFG_TUD_MSC_BUFSIZE         CONFIG_TINYUSB_MSC_BUFSIZE
 
+#define CONFIG_TINYUSB_HID_BUFSIZE		64
+#define CONFIG_TINYUSB_DESC_HID_STRING 	"HID Device"
+
 // HID buffer size Should be sufficient to hold ID (if any) + Data
 #define CFG_TUD_HID_BUFSIZE         CONFIG_TINYUSB_HID_BUFSIZE
 
@@ -91,6 +94,11 @@ extern "C" {
 #define CFG_TUD_HID                 CONFIG_TINYUSB_HID_ENABLED
 #define CFG_TUD_MIDI                CONFIG_TINYUSB_MIDI_ENABLED
 #define CFG_TUD_CUSTOM_CLASS        CONFIG_TINYUSB_CUSTOM_CLASS_ENABLED
+
+#define CFG_TUD_VENDOR              (1)
+
+#define CFG_TUD_VENDOR_RX_BUFSIZE   (64)
+#define CFG_TUD_VENDOR_TX_BUFSIZE   (64)
 
 #ifdef __cplusplus
 }

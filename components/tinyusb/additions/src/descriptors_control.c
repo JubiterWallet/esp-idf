@@ -17,13 +17,14 @@
 
 static const char *TAG = "tusb_desc";
 static tusb_desc_device_t s_descriptor;
+static const uint8_t *s_configuration_descriptor;
 static char *s_str_descriptor[USB_STRING_DESCRIPTOR_ARRAY_SIZE];
 #define MAX_DESC_BUF_SIZE 32
 
 #if CFG_TUD_HID //HID Report Descriptor
 uint8_t const desc_hid_report[] = {
-    TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(REPORT_ID_KEYBOARD), ),
-    TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(REPORT_ID_MOUSE), )
+    TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(REPORT_ID_KEYBOARD) ),
+    TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(REPORT_ID_MOUSE) )
 };
 #endif
 
@@ -41,7 +42,7 @@ uint8_t const desc_configuration[] = {
 #   endif
 #   if CFG_TUD_HID
     // Interface number, string index, protocol, report descriptor len, EP In address, size & polling interval
-    TUD_HID_DESCRIPTOR(ITF_NUM_HID, 6, HID_PROTOCOL_NONE, sizeof(desc_hid_report), 0x84, 16, 10)
+    //TUD_HID_DESCRIPTOR(ITF_NUM_HID, 6, HID_PROTOCOL_NONE, sizeof(desc_hid_report), 0x84, 16, 10)
 #   endif
 };
 
@@ -70,10 +71,18 @@ uint8_t const *tud_descriptor_device_cb(void)
 uint8_t const *tud_descriptor_configuration_cb(uint8_t index)
 {
     (void)index; // for multiple configurations
-    return desc_configuration;
+    return s_configuration_descriptor;
 }
 
 static uint16_t _desc_str[MAX_DESC_BUF_SIZE];
+
+#define USB_WINUSB_VENDOR_CODE \
+  0x88  // arbitrary, but must be equivalent to the last character in extra
+       // string
+
+#define USB_WINUSB_EXTRA_STRING                                                \
+  'M', 0x00, 'S', 0x00, 'F', 0x00, 'T', 0x00, '1', 0x00, '0', 0x00, '0', 0x00, \
+      USB_WINUSB_VENDOR_CODE, 0x00  // MSFT100
 
 // Invoked when received GET STRING DESCRIPTOR request
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
@@ -82,6 +91,21 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid)
     (void) langid;
 
     uint8_t chr_count;
+
+	if(index == 0xEE){          //web usb 
+		uint8_t winusb_string_descriptor[] = {
+			0x12,					 // bLength
+			TUSB_DESC_STRING,	     // bDescriptorType
+			USB_WINUSB_EXTRA_STRING  // wData
+		};
+
+        uint8_t *dst = (uint8_t *)_desc_str;
+
+        for (uint8_t i = 0; i < 0x12; i++) {
+            dst[i] = winusb_string_descriptor[i];
+        }			
+		return _desc_str;
+	}
 
     if ( index == 0) {
         memcpy(&_desc_str[1], s_str_descriptor[0], 2);
@@ -120,17 +144,36 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid)
  * @return uint8_t const*
  */
 #if CFG_TUD_HID
-uint8_t const *tud_hid_descriptor_report_cb(void)
+ __attribute__((weak)) uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf)
 {
     return desc_hid_report;
 }
+
+ __attribute__((weak)) uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen){
+  (void) itf;
+  (void) report_id;
+  (void) report_type;
+  (void) buffer;
+  (void) reqlen;
+  return 0;  
+}
+ __attribute__((weak)) void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize){
+
+  (void) itf;
+  (void) report_id;
+  (void) report_type;
+  (void) buffer;
+  (void) bufsize;
+}
+
 #endif
 
 // =============================================================================
 // Driver functions
 // =============================================================================
 
-void tusb_set_descriptor(tusb_desc_device_t *dev_desc, const char **str_desc)
+// void tusb_set_descriptor(tusb_desc_device_t *dev_desc, const char **str_desc)
+void tusb_set_descriptor(const tusb_desc_device_t *dev_desc, const char **str_desc, const uint8_t *cfg_desc)
 {
     ESP_LOGI(TAG, "\n"
              "┌─────────────────────────────────┐\n"
@@ -164,6 +207,7 @@ void tusb_set_descriptor(tusb_desc_device_t *dev_desc, const char **str_desc)
              dev_desc->iManufacturer, dev_desc->iProduct, dev_desc->iSerialNumber,
              dev_desc->bNumConfigurations);
     s_descriptor = *dev_desc;
+    s_configuration_descriptor = cfg_desc;
 
     if (str_desc != NULL) {
         memcpy(s_str_descriptor, str_desc,
