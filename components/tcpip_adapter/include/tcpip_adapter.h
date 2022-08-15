@@ -109,7 +109,7 @@ esp_err_t tcpip_adapter_create_ip6_linklocal(tcpip_adapter_if_t tcpip_if);
  * as this used to be called privately from wifi_init()
  * @return ESP_OK on success
  */
-esp_err_t tcpip_adapter_set_default_eth_handlers(void);
+//esp_err_t tcpip_adapter_set_default_eth_handlers(void);
 
 /**
  * @brief Compatible version of network stack input function. Translates to esp_netif_receive()
@@ -136,7 +136,7 @@ esp_err_t tcpip_adapter_clear_default_wifi_handlers(void);
  * @brief Compatible version of former tcpip_adapter API to clear default ethernet handlers
  * @return ESP_OK on success
  */
-esp_err_t tcpip_adapter_clear_default_eth_handlers(void);
+//esp_err_t tcpip_adapter_clear_default_eth_handlers(void);
 
 /**
  * @brief Compatible version of former tcpip_adapter API of esp_netif_dhcps_stop

@@ -74,6 +74,7 @@ typedef struct {
     tusb_desc_device_t *descriptor; /*!< Pointer to a device descriptor */
     const char **string_descriptor; /*!< Pointer to an array of string descriptors */
     bool external_phy;              /*!< Should USB use an external PHY */
+    const uint8_t *configuration_descriptor;  /*!< Pointer to a configuration descriptor. If set to NULL, TinyUSB device will use a default configuration descriptor whose values are set in Kconfig */
 } tinyusb_config_t;
 
 /**
@@ -94,7 +95,7 @@ typedef struct {
  * @retval ESP_OK Install driver and tinyusb stack successfully
  */
 esp_err_t tinyusb_driver_install(const tinyusb_config_t *config);
-
+esp_err_t tinyusb_driver_uninstall(void);
 // TODO esp_err_t tinyusb_driver_uninstall(void); (IDF-1474)
 
 #ifdef __cplusplus

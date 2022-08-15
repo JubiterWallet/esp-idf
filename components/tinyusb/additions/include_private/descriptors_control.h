@@ -16,6 +16,7 @@
 
 #include <string.h>
 #include "usb_descriptors.h"
+#include "tinyusb.h"
 
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
@@ -48,20 +49,20 @@ enum {
     ITF_NUM_MSC,
 #   endif
 
-#   if CFG_TUD_HID
-    ITF_NUM_HID,
-#   endif
+// #   if CFG_TUD_HID
+//     ITF_NUM_HID,
+// #   endif
 
     ITF_NUM_TOTAL
 };
 
 enum {
-    TUSB_DESC_TOTAL_LEN = TUD_CONFIG_DESC_LEN + CFG_TUD_CDC * TUD_CDC_DESC_LEN + CFG_TUD_MSC * TUD_MSC_DESC_LEN +
-                       CFG_TUD_HID * TUD_HID_DESC_LEN
+    TUSB_DESC_TOTAL_LEN = TUD_CONFIG_DESC_LEN + CFG_TUD_CDC * TUD_CDC_DESC_LEN + CFG_TUD_MSC * TUD_MSC_DESC_LEN /*+
+                       CFG_TUD_HID * TUD_HID_DESC_LEN */
 };
 
 bool tusb_desc_set;
-void tusb_set_descriptor(tusb_desc_device_t *desc, const char **str_desc);
+void tusb_set_descriptor(const tusb_desc_device_t *desc, const char **str_desc, const uint8_t *cfg_desc);
 tusb_desc_device_t *tusb_get_active_desc(void);
 char **tusb_get_active_str_desc(void);
 void tusb_clear_descriptor(void);
