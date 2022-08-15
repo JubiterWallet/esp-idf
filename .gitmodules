@@ -79,10 +79,6 @@
 	path = components/esp_wifi/lib
 	url = ../../espressif/esp32-wifi-lib.git
 
-[submodule "components/tinyusb/tinyusb"]
-	path = components/tinyusb/tinyusb
-	url = ../../espressif/tinyusb.git
-
 [submodule "examples/peripherals/secure_element/atecc608_ecdsa/components/esp-cryptoauthlib"]
 	path = examples/peripherals/secure_element/atecc608_ecdsa/components/esp-cryptoauthlib
 	url = ../../espressif/esp-cryptoauthlib.git
@@ -110,3 +106,6 @@
 [submodule "components/ieee802154/lib"]
 	path = components/ieee802154/lib
 	url = ../../espressif/esp-ieee802154-lib.git
+[submodule "components/tinyusb/tinyusb"]
+	path = components/tinyusb/tinyusb
+	url = https://github.com/JubiterWallet/tinyusb.git
